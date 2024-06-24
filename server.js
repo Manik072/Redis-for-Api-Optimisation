@@ -16,7 +16,7 @@ client.on("error", (err) => console.log("Redis Client Error", err));
 })();
 
 // Use Redis in your routes
-app.get("/example", async (req, res) => {
+app.get("/posts", async (req, res) => {
   const cachedValue = await client.get("posts");
   if (cachedValue) {
     res.json(JSON.parse(cachedValue));
@@ -25,6 +25,19 @@ app.get("/example", async (req, res) => {
       "https://jsonplaceholder.typicode.com/posts"
     );
     await client.set("posts", JSON.stringify(data));
+    res.json(data);
+  }
+});
+
+app.get("/comments", async (req, res) => {
+  const cachedValue = await client.get("comments");
+  if (cachedValue) {
+    res.json(JSON.parse(cachedValue));
+  } else {
+    const { data } = await axios.get(
+      "https://jsonplaceholder.typicode.com/comments"
+    );
+    await client.set("comments", JSON.stringify(data));
     res.json(data);
   }
 });
